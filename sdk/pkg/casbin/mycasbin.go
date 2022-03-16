@@ -25,7 +25,7 @@ m = r.sub == p.sub && (keyMatch2(r.obj, p.obj) || keyMatch(r.obj, p.obj)) && (r.
 `
 
 func Setup(db *gorm.DB, prefix string) *casbin.SyncedEnforcer {
-	Apter, err := gormAdapter.NewAdapterByDBUseTableName(db, prefix, "")
+	Apter, err := gormAdapter.NewAdapterByDBUseTableName(db, "", prefix+"sys_casbin_rule")
 	if err != nil {
 		panic(err)
 	}
