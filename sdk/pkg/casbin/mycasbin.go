@@ -24,8 +24,8 @@ e = some(where (p.eft == allow))
 m = r.sub == p.sub && (keyMatch2(r.obj, p.obj) || keyMatch(r.obj, p.obj)) && (r.act == p.act || p.act == "*")
 `
 
-func Setup(db *gorm.DB, _ string) *casbin.SyncedEnforcer {
-	Apter, err := gormAdapter.NewAdapterByDB(db)
+func Setup(db *gorm.DB, prefix string) *casbin.SyncedEnforcer {
+	Apter, err := gormAdapter.NewAdapterByDBUseTableName(db, prefix, "")
 	if err != nil {
 		panic(err)
 	}
