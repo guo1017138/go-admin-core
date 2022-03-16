@@ -32,4 +32,5 @@ require (
 replace (
 	github.com/go-admin-team/go-admin-core => ../
 	github.com/go-admin-team/go-admin-core/plugins/logger/zap => ../plugins/logger/zap
+	github.com/go-admin-team/gorm-adapter/v3 v3.2.1-0.20210902112335-4148cb356a24 => github.com/guo1017138/gorm-adapter/v3 v3.2.1-0.20220316083511-459e99a1f7b3
 )
