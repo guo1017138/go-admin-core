@@ -3,8 +3,6 @@ package config
 type Database struct {
 	Driver          string
 	Source          string
-	TablePrefix     string
-	Schema          string // For postgres, for other types, leave empty
 	ConnMaxIdleTime int
 	ConnMaxLifeTime int
 	MaxIdleConns    int

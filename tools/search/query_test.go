@@ -45,7 +45,7 @@ func TestResolveSearchQuery(t *testing.T) {
 			GormPublic: GormPublic{},
 			Join:       make([]*GormJoin, 0),
 		}
-		ResolveSearchQuery("mysql", "", d, condition)
+		ResolveSearchQuery("mysql", d, condition)
 		fmt.Println(condition)
 	})
 }

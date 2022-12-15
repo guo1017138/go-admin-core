@@ -73,7 +73,7 @@ type resolveSearchTag struct {
 }
 
 // makeTag 解析search的tag标签
-func makeTag(tag, prefix string) *resolveSearchTag {
+func makeTag(tag string) *resolveSearchTag {
 	r := &resolveSearchTag{}
 	tags := strings.Split(tag, ";")
 	var ts []string
@@ -93,7 +93,7 @@ func makeTag(tag, prefix string) *resolveSearchTag {
 			}
 		case "table":
 			if len(ts) > 1 {
-				r.Table = prefix + ts[1]
+				r.Table = ts[1]
 			}
 		case "on":
 			if len(ts) > 1 {
@@ -101,7 +101,7 @@ func makeTag(tag, prefix string) *resolveSearchTag {
 			}
 		case "join":
 			if len(ts) > 1 {
-				r.Join = prefix + ts[1]
+				r.Join = ts[1]
 			}
 		}
 	}
