@@ -27,51 +27,46 @@ const (
  *	isnull
  *  order 排序		e.g. order[key]=desc     order[key]=asc
  */
-func ResolveSearchQuery(driver string, q interface{}, condition Condition) {
+func ResolveSearchQuery(driver, prefix string, q interface{}, condition Condition) {
 	qType := reflect.TypeOf(q)
 	qValue := reflect.ValueOf(q)
 	var tag string
 	var ok bool
 	var t *resolveSearchTag
 
-	var sep = "`"
-	if driver == Postgres {
-		sep = "\""
-	}
-
 	for i := 0; i < qType.NumField(); i++ {
 		tag, ok = "", false
 		tag, ok = qType.Field(i).Tag.Lookup(FromQueryTag)
 		if !ok {
 			//递归调用
-			ResolveSearchQuery(driver, qValue.Field(i).Interface(), condition)
+			ResolveSearchQuery(driver, prefix, qValue.Field(i).Interface(), condition)
 			continue
 		}
 		switch tag {
 		case "-":
 			continue
 		}
-		t = makeTag(tag)
+		t = makeTag(tag, prefix)
 		if qValue.Field(i).IsZero() {
 			continue
 		}
 		//解析 Postgres `语法不支持，单独适配
 		if driver == Postgres {
-			pgSql(driver, t, condition, qValue, i)
+			pgSql(driver, prefix, t, condition, qValue, i)
 		} else {
-			otherSql(driver, t, condition, qValue, i)
+			otherSql(driver, prefix, t, condition, qValue, i)
 		}
 	}
 }
 
-func pgSql(driver string, t *resolveSearchTag, condition Condition, qValue reflect.Value, i int) {
+func pgSql(driver, prefix string, t *resolveSearchTag, condition Condition, qValue reflect.Value, i int) {
 	switch t.Type {
 	case "left":
 		//左关联
 		join := condition.SetJoinOn(t.Type, fmt.Sprintf(
 			"left join %s on %s.%s = %s.%s", t.Join, t.Join, t.On[0], t.Table, t.On[1],
 		))
-		ResolveSearchQuery(driver, qValue.Field(i).Interface(), join)
+		ResolveSearchQuery(driver, prefix, qValue.Field(i).Interface(), join)
 	case "exact", "iexact":
 		condition.SetWhere(fmt.Sprintf("%s.%s = ?", t.Table, t.Column), []interface{}{qValue.Field(i).Interface()})
 	case "icontains":
@@ -108,7 +103,7 @@ func pgSql(driver string, t *resolveSearchTag, condition Condition, qValue refle
 	}
 }
 
-func otherSql(driver string, t *resolveSearchTag, condition Condition, qValue reflect.Value, i int) {
+func otherSql(driver, prefix string, t *resolveSearchTag, condition Condition, qValue reflect.Value, i int) {
 	switch t.Type {
 	case "left":
 		//左关联
@@ -120,7 +115,7 @@ func otherSql(driver string, t *resolveSearchTag, condition Condition, qValue re
 			t.Table,
 			t.On[1],
 		))
-		ResolveSearchQuery(driver, qValue.Field(i).Interface(), join)
+		ResolveSearchQuery(driver, prefix, qValue.Field(i).Interface(), join)
 	case "exact", "iexact":
 		condition.SetWhere(fmt.Sprintf("`%s`.`%s` = ?", t.Table, t.Column), []interface{}{qValue.Field(i).Interface()})
 	case "contains", "icontains":

@@ -36,9 +36,9 @@ var (
 	once     sync.Once
 )
 
-func Setup(db *gorm.DB, _ string) *casbin.SyncedEnforcer {
+func Setup(db *gorm.DB, prefix string) *casbin.SyncedEnforcer {
 	once.Do(func() {
-		Apter, err := gormAdapter.NewAdapterByDBUseTableName(db, "sys", "casbin_rule")
+		Apter, err := gormAdapter.NewAdapterByDBUseTableName(db, "", prefix+"sys_casbin_rule")
 		if err != nil && err.Error() != "invalid DDL" {
 			panic(err)
 		}
